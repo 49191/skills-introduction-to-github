@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#111e32">
+  <meta property="og:title" content="Sky Flight | F Blox Testflug">
+  <meta property="og:description" content="Starte dein Flugzeug, fliege durch Ringe, sammle Münzen und verbessere deinen Flieger. Direkt im Browser ohne Anmeldung.">
+  <meta property="og:image" content="https://kuhbzsyctwqdtqumyjzj.supabase.co/functions/v1/sky-flight-test/cover.svg">
+  <title>Sky Flight · F Blox Testflug</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22a%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2348c8ec%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%231a4383%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2221%22%20fill%3D%22url(%23a)%22%2F%3E%3Cpath%20d%3D%22M20%2046%2050%2022l30%2024-30-7zM46%2042h8v37h-8zM26%2064l24-11%2024%2011-24-3z%22%20fill%3D%22%23f5ead3%22%2F%3E%3C%2Fsvg%3E" type="image/svg+xml">
+  <style>
+  :root{color-scheme:dark;--ink:#eaf2ff;--muted:#92a5be;--line:#ffffff22;--gold:#ffd064;--navy:#111d30}
+  *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#0c1728;font-family:Inter,ui-sans-serif,-apple-system,system-ui,sans-serif;color:var(--ink)}
+  button{cursor:pointer;font:inherit;border:0}button:focus-visible{outline:3px solid #8fe8ff;outline-offset:3px}
+  #app{height:100dvh;min-height:420px;position:relative;overflow:hidden;background:#87c1ea}
+  canvas{width:100%;height:100%;display:block;touch-action:none}
+  .game-top{position:absolute;z-index:6;inset:0 0 auto;display:flex;justify-content:space-between;align-items:center;padding:calc(14px + env(safe-area-inset-top)) 18px 0;pointer-events:none;gap:12px}
+  .brand{display:flex;gap:11px;align-items:center;background:#111d30db;border:1px solid #ffffff21;padding:9px 13px;border-radius:14px;backdrop-filter:blur(10px);box-shadow:0 6px 18px #09182b35}
+  .mark{display:grid;place-items:center;width:37px;height:37px;border-radius:11px;background:linear-gradient(145deg,#42acde,#19629a);font-weight:950;font-size:23px}
+  .brand strong{font-size:13px;font-weight:900;letter-spacing:.12em;display:block}.brand small{font-size:10px;font-weight:750;letter-spacing:.12em;color:#9bd7ee}
+  .pill{display:flex;align-items:center;gap:10px;background:#101d32db;border:1px solid #ffffff24;border-radius:14px;padding:12px 15px;backdrop-filter:blur(12px);font-size:13px;font-weight:850;box-shadow:0 6px 18px #09182b35}
+  .pill b{color:var(--gold);font-size:17px}
+  #hud{position:absolute;left:17px;top:calc(88px + env(safe-area-inset-top));z-index:7;background:#12243bdc;border:1px solid #fff3;border-radius:17px;padding:12px 15px;min-width:200px;backdrop-filter:blur(8px);box-shadow:0 12px 28px #13233e24;pointer-events:none;display:none}
+  .rowline{display:flex;gap:16px;align-items:center;justify-content:space-between;margin:4px 0;font-size:12px;color:#b7cbdf;font-weight:750}
+  .rowline strong{color:#fff;font-size:15px}.bigdist{font-size:29px;font-weight:950;letter-spacing:-.03em;line-height:1.2;color:#ffe392}
+  .fueltrack{height:7px;border-radius:99px;background:#56718566;margin-top:5px;overflow:hidden}.fuelbar{background:linear-gradient(90deg,#edaa39,#f6e188);height:100%;width:100%}
+  #pauseButton{position:absolute;z-index:9;right:18px;top:calc(90px + env(safe-area-inset-top));display:none}
+  .control-button{background:#12243fda;color:white;border:1px solid #fff6;padding:12px 17px;border-radius:13px;font-weight:850;box-shadow:0 6px 22px #06112144;backdrop-filter:blur(10px)}
+  .screen{position:absolute;z-index:8;inset:0;display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
+  .panel{pointer-events:auto;width:min(960px,calc(100% - 26px));border:1px solid #fffffe36;box-shadow:0 18px 70px #091425a0;border-radius:23px 23px 0 0;background:linear-gradient(170deg,#203751ee,#0e1a2df7);backdrop-filter:blur(18px);padding:20px 23px calc(20px + env(safe-area-inset-bottom));}
+  .panelhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .eyebrow{font-weight:950;letter-spacing:.21em;font-size:11px;color:#8de0f3;text-transform:uppercase}
+  h1{font-size:clamp(32px,6vw,58px);line-height:1;margin:3px 0 7px;letter-spacing:-.055em;font-weight:1000}
+  .desc{font-size:13px;color:#b6c7d8;margin:4px 0 12px;max-width:620px;line-height:1.48}
+  .mainBtn{padding:15px 28px;border-radius:15px;color:#14263b;background:linear-gradient(115deg,#ffe18c,#e9ad40);box-shadow:0 7px 0 #b77b2a,0 10px 20px #07111d66;font-size:16px;font-weight:1000;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;min-height:51px}
+  .mainBtn:active{transform:translateY(4px);box-shadow:0 3px 0 #b77b2a}
+  .mainBtn.secondary{color:#ecfaff;background:#263e57;box-shadow:none;border:1px solid #ffffff32}
+  .upgradeHeader{display:flex;justify-content:space-between;align-items:center;margin:15px 0 9px;font-weight:850;font-size:12px;color:#b2cddd}
+  .upgrades{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+  .upgrade{min-height:108px;border:1px solid #ffffff25;border-radius:13px;background:linear-gradient(145deg,#2d445d,#162c43);color:#edf6ff;text-align:left;padding:10px;transition:transform .15s,border-color .15s;display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+  .upgrade:hover:not(:disabled){transform:translateY(-2px);border-color:#ffe495}
+  .upgrade:disabled{opacity:.64;cursor:default}.upIcon{font-size:18px;color:#ffce69}.upTitle{font-size:12px;font-weight:900}.upSub{font-size:10px;color:#a5bfd5}.upPrice{margin-top:auto;font-size:12px;font-weight:900;color:#ffd56f}.upgrade .level{font-size:10px;color:#9be8ef}
+  .screen[hidden],#hud[hidden],#pauseButton[hidden],#controls[hidden]{display:none!important}
+  #controls{position:absolute;z-index:7;inset:auto 0 calc(24px + env(safe-area-inset-bottom));display:none;align-items:flex-end;justify-content:space-between;padding:0 26px;pointer-events:none}
+  #joystick{pointer-events:auto;width:116px;height:116px;border-radius:50%;position:relative;border:2px solid #ffffff66;background:#12243b6b;touch-action:none;box-shadow:inset 0 0 20px #050e1d3b;user-select:none}
+  #joystick::after{content:"";position:absolute;inset:15px;border:1px dashed #ffffff40;border-radius:50%}
+  #stick{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px;border:2px solid #fff8;border-radius:50%;background:linear-gradient(145deg,#71d8f3d9,#26669ba8);box-shadow:0 5px 12px #11213566;transform:translate(0,0)}
+  #boost{pointer-events:auto;border-radius:50%;width:97px;height:97px;background:linear-gradient(145deg,#ffcd74,#df6f24);border:4px solid #ffe9ad;color:#4c2610;font-size:14px;font-weight:950;touch-action:none;box-shadow:0 8px 22px #1e243b66;user-select:none}
+  #boost.active{transform:scale(.92);background:#fff09a}
+  #help{position:absolute;z-index:7;left:50%;bottom:calc(9px + env(safe-area-inset-bottom));transform:translateX(-50%);white-space:nowrap;padding:5px 9px;border-radius:20px;background:#13233db3;color:#e4efff;font-size:11px;font-weight:700;display:none;pointer-events:none}
+  .resultPanel{max-width:480px;text-align:center;border-radius:22px;margin:auto auto auto;align-self:center;padding:25px}
+  .resultPanel h2{font-size:32px;margin:7px 0}.resultStats{font-size:48px;font-weight:950;color:#ffe293;line-height:1.2}.resultPanel p{color:#c9d7e7}.resultButtons{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  @media(max-width:680px){.game-top{padding-left:11px;padding-right:11px}.brand{padding:7px 9px}.brand strong{font-size:11px}.brand small{font-size:9px}.mark{width:32px;height:32px}.pill{padding:10px 10px;font-size:11px}.panel{padding:14px 12px calc(16px + env(safe-area-inset-bottom))}.panelhead{align-items:flex-start}.mainBtn{padding:13px 17px;font-size:14px}.upgrades{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.upgrade{min-height:92px;padding:8px}.upSub{display:none}.desc{font-size:12px;margin-bottom:5px}.upgradeHeader{margin:10px 0 7px}.eyebrow{font-size:10px}h1{font-size:36px}.resultPanel{max-width:calc(100% - 30px)}#hud{min-width:164px;top:calc(76px + env(safe-area-inset-top));left:11px;padding:9px 10px}.bigdist{font-size:23px}#pauseButton{top:calc(77px + env(safe-area-inset-top));right:11px}#controls{padding:0 19px}#joystick{width:100px;height:100px}#boost{width:90px;height:90px}#help{font-size:10px}}
+  @media(max-height:690px){.panel{padding-top:11px}.upgrades{gap:6px}.upgrade{min-height:85px}.desc{margin-bottom:3px}#controls{bottom:calc(14px + env(safe-area-inset-bottom))}}
+  </style>
+</head>
+<body>
+  <main id="app">
+    <canvas id="flightCanvas" aria-label="3D-Fluglandschaft mit Flugzeug, Münzen und Hindernissen"></canvas>
+    <div class="game-top">
+      <div class="brand"><div class="mark">F</div><div><strong>F BLOX <span style="color:#88dcff">/ SKY FLIGHT</span></strong><small>SPIELBARE TESTVERSION · OHNE LOGIN</small></div></div>
+      <div class="pill" aria-label="Deine Flugmünzen">🟡 <span>FLUGMÜNZEN</span> <b id="bank">0</b></div>
+    </div>
+    <div id="hud" aria-live="off">
+      <div class="bigdist"><span id="distance">0</span> m</div>
+      <div class="rowline"><span>Geschwindigkeit</span><strong id="speed">0 km/h</strong></div>
+      <div class="rowline"><span>Höhe</span><strong id="altitude">0 m</strong></div>
+      <div class="rowline"><span>Flugzeug</span><strong id="health">100%</strong></div>
+      <div class="rowline"><span>Aufgesammelt</span><strong style="color:#ffdc82" id="collect">+0</strong></div>
+      <div class="rowline"><span>Treibstoff</span><span id="fuelLabel">100%</span></div>
+      <div class="fueltrack"><div id="fuel" class="fuelbar"></div></div>
+    </div>
+    <button id="pauseButton" class="control-button" type="button" aria-label="Pause">Ⅱ PAUSE</button>
+    <div id="controls"><div id="joystick" aria-label="Flugsteuerung: nach links, rechts, oben oder unten ziehen"><div id="stick"></div></div><button id="boost" type="button">BOOST</button></div>
+    <div id="help">WASD / Pfeiltasten steuern · Leertaste Boost · P Pause</div>
+    <section id="garageScreen" class="screen">
+      <div class="panel">
+        <div class="panelhead">
+          <div><div class="eyebrow">Fliegen · sammeln · verbessern</div><h1>SKY FLIGHT</h1><p class="desc">Wie im Flugspiel aus deinem Video: Starte, steuere durch goldene Münzen und leuchtende Ringe. Nach jedem Flug kannst du dein Flugzeug aufrüsten.</p></div>
+          <button id="fly" class="mainBtn" type="button">✈ STARTEN</button>
+        </div>
+        <div class="upgradeHeader"><span>FLUGZEUG VERBESSERN</span><span id="record">REKORD 0 m · 0 FLÜGE</span></div>
+        <div id="upgradeGrid" class="upgrades"></div>
+      </div>
+    </section>
+    <section id="resultScreen" class="screen" hidden>
+      <div class="panel resultPanel">
+        <div class="eyebrow" id="resultEyebrow">FLUG ABGESCHLOSSEN</div><h2 id="resultTitle">GELANDET</h2>
+        <div class="resultStats" id="resultDistance">0 m</div>
+        <p id="resultCoins">+0 Flugmünzen</p>
+        <p>Verbessere dein Flugzeug, dann kommst du beim nächsten Versuch weiter.</p>
+        <div class="resultButtons"><button id="again" class="mainBtn" type="button">✈ NOCHMAL</button><button id="hangar" class="mainBtn secondary" type="button">HANGAR</button></div>
+      </div>
+    </section>
+    <section id="pauseScreen" class="screen" hidden>
+      <div class="panel resultPanel">
+        <div class="eyebrow">SKY FLIGHT</div><h2>PAUSE</h2><p>Dein Flug ist angehalten.</p>
+        <div class="resultButtons"><button id="resume" class="mainBtn" type="button">WEITER</button><button id="quit" class="mainBtn secondary" type="button">HANGAR</button></div>
+      </div>
+    </section>
+  </main>
+  <script>
+"use strict";
+/*
+ * Sky Flight — independent, no-account game prototype.
+ * Runs fully offline after load: all flight coins & upgrades are local to this browser.
+ */
+(() => {
+  const $ = id => document.getElementById(id);
+  const canvas = $("flightCanvas");
+  const ctx = canvas.getContext("2d", { alpha: false });
+  const storageKey = "fblox-skyflight-test-v1";
+  const keys = new Set();
+  const maxUpgrade = 20;
+  const upgradeDefs = [
+    ["wings", "Flügel", "Mehr Auftrieb", "✈"],
+    ["tail", "Leitwerk", "Schneller lenken", "➤"],
+    ["engine", "Motor", "Höhere Geschwindigkeit", "⚙"],
+    ["hull", "Rumpf", "Weniger Schaden", "⬡"],
+    ["launcher", "Katapult", "Höherer Start", "↗"],
+    ["income", "Einkommen", "Mehr Münzen", "●"]
+  ];
+  const firstUpgrades = () => ({ wings: 1, tail: 1, engine: 1, hull: 1, launcher: 1, income: 1 });
+  function load() {
+    const fallback = { coins: 0, best: 0, flights: 0, upgrades: firstUpgrades() };
+    try {
+      const data = JSON.parse(localStorage.getItem(storageKey));
+      if (!data || typeof data !== "object") return fallback;
+      for (const key of Object.keys(fallback.upgrades)) {
+        const n = Number(data.upgrades?.[key]);
+        fallback.upgrades[key] = Number.isFinite(n) ? clamp(Math.floor(n), 1, maxUpgrade) : 1;
+      }
+      for (const key of ["coins", "best", "flights"]) {
+        const n = Number(data[key]);
+        fallback[key] = Number.isFinite(n) ? clamp(Math.floor(n), 0, 1e7) : 0;
+      }
+    } catch { /* localStorage may be disabled */ }
+    return fallback;
+  }
+  function save() { try { localStorage.setItem(storageKey, JSON.stringify(bank)); } catch { /* continue without saving */ } }
+  const clamp = (n,a,b) => Math.max(a,Math.min(b,n));
+  const price = level => Math.round(65*Math.pow(1.7,level-1)/5)*5;
+  const bank = load();
+  let phase = "garage", f, activePointer = null, stick = { x:0, y:0 }, boostTouch = false, now = 0, prev = 0, resolution = { w: 0, h: 0 };
+  let particles = [];
+  let collected = new Set(), hit = new Set();
+  const PRNG = n => {
+    const k = Math.sin(n*94.71 + 5.31)*23425.245;
+    return k-Math.floor(k);
+  };
+  const coins = Array.from({ length: 900 }, (_,i) => ({
+    d: 48 + i*21.5,
+    x: Math.sin(i*.93)*11 + Math.sin(i*.43)*5,
+    y: 11 + (Math.sin(i*.66)+1)*3.1,
+  }));
+  const rings = Array.from({ length: 180 }, (_,i) => ({
+    d: 116 + i*96,
+    x: Math.sin(i*.82)*13,
+    y: 13 + Math.sin(i*.48)*4
+  }));
+  function makeFlight() {
+    return {
+      distance: 0, x: 0, height: 11 + bank.upgrades.launcher*2.8,
+      speed: 24 + bank.upgrades.engine*2.6 + bank.upgrades.launcher*1.4,
+      vy: 1.8, roll: 0, pitch: 0, health: 100,
+      fuel: 100, collected: 0, time: 0, bonusRings: 0
+    };
+  }
+  f = makeFlight();
+
+  function renderUpgrades() {
+    $("bank").textContent = bank.coins.toLocaleString("de-DE");
+    $("record").textContent = "REKORD " + bank.best.toLocaleString("de-DE") + " m · " + bank.flights + " FLÜGE";
+    $("upgradeGrid").replaceChildren(...upgradeDefs.map(([id,label,subtitle,icon]) => {
+      const level = bank.upgrades[id], cost = price(level);
+      const button = document.createElement("button");
+      button.type = "button"; button.className = "upgrade";
+      button.disabled = level >= maxUpgrade || bank.coins < cost;
+      button.setAttribute("aria-label", label + " Stufe " + level + ", " + (level >= maxUpgrade ? "Maximum erreicht" : cost + " Flugmünzen"));
+      const glyph = document.createElement("span"); glyph.className = "upIcon"; glyph.textContent = icon;
+      const title = document.createElement("span"); title.className = "upTitle"; title.textContent = label;
+      const sub = document.createElement("span"); sub.className = "upSub"; sub.textContent = subtitle;
+      const lv = document.createElement("span"); lv.className = "level"; lv.textContent = "STUFE " + level;
+      const value = document.createElement("span"); value.className = "upPrice"; value.textContent = level >= maxUpgrade ? "MAX" : "🟡 " + cost.toLocaleString("de-DE");
+      button.append(glyph, title, sub, lv, value);
+      button.addEventListener("click", () => {
+        if (phase !== "garage" || level >= maxUpgrade || bank.coins < cost) return;
+        bank.coins -= cost;
+        bank.upgrades[id] += 1;
+        save(); renderUpgrades(); f = makeFlight();
+      });
+      return button;
+    }));
+  }
+  function show(what) {
+    phase = what;
+    $("garageScreen").hidden = what !== "garage";
+    $("resultScreen").hidden = what !== "crashed";
+    $("pauseScreen").hidden = what !== "paused";
+    $("hud").style.display = what === "running" ? "block" : "none";
+    $("pauseButton").style.display = what === "running" ? "block" : "none";
+    $("controls").style.display = what === "running" ? "flex" : "none";
+    $("help").style.display = what === "running" && matchMedia("(pointer:fine)").matches ? "block" : "none";
+    if (what === "garage") renderUpgrades();
+    if (what !== "running") { boostTouch = false; stick = { x:0,y:0 }; syncStick(); }
+  }
+  function startFlight() {
+    f = makeFlight();
+    collected.clear(); hit.clear(); particles = []; stick = {x:0,y:0}; boostTouch = false;
+    show("running"); updateHUD();
+  }
+  function finishFlight() {
+    if (phase !== "running") return;
+    const reward = Math.max(1, Math.floor(f.distance/12)) + f.collected;
+    bank.coins = Math.min(1e7,bank.coins + reward);
+    bank.best = Math.max(bank.best, Math.floor(f.distance));
+    bank.flights++;
+    save();
+    $("resultEyebrow").textContent = f.health <= 0 ? "FLUGZEUG BESCHÄDIGT" : f.fuel <= 0 ? "TANK LEER" : "FLUG BEENDET";
+    $("resultTitle").textContent = "FLUG BEENDET";
+    $("resultDistance").textContent = Math.floor(f.distance).toLocaleString("de-DE") + " m";
+    $("resultCoins").textContent = "+"+reward.toLocaleString("de-DE")+" Flugmünzen · "+f.bonusRings+" Bonusringe";
+    $("bank").textContent = bank.coins.toLocaleString("de-DE");
+    show("crashed");
+  }
+  function abandonFlight() { show("garage"); f = makeFlight(); }
+  function togglePause() { if (phase === "running") show("paused"); else if (phase === "paused") show("running"); }
+  $("fly").addEventListener("click", startFlight);
+  $("again").addEventListener("click", startFlight);
+  $("hangar").addEventListener("click", abandonFlight);
+  $("quit").addEventListener("click", abandonFlight);
+  $("resume").addEventListener("click", togglePause);
+  $("pauseButton").addEventListener("click", togglePause);
+  window.addEventListener("keydown", event => {
+    if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].includes(event.code)) event.preventDefault();
+    if (["Escape","KeyP"].includes(event.code) && !event.repeat) togglePause();
+    if (event.code === "Enter" && phase === "garage") startFlight();
+    else if (event.code === "Enter" && phase === "crashed") startFlight();
+    keys.add(event.code);
+  });
+  window.addEventListener("keyup", e=>keys.delete(e.code));
+  document.addEventListener("visibilitychange", () => { if (document.hidden && phase === "running") show("paused"); });
+  window.addEventListener("blur", () => { if (document.hidden && phase === "running") show("paused"); });
+
+  const joystick = $("joystick");
+  function syncStick() {
+    $("stick").style.transform = "translate("+Math.round(stick.x*30)+"px,"+Math.round(-stick.y*30)+"px)";
+  }
+  function setStick(e) {
+    const r = joystick.getBoundingClientRect();
+    const dx=(e.clientX-(r.left+r.width/2))/Math.max(20,r.width*.32);
+    const dy=((r.top+r.height/2)-e.clientY)/Math.max(20,r.height*.32);
+    stick={x:clamp(dx,-1,1),y:clamp(dy,-1,1)};syncStick();
+  }
+  joystick.addEventListener("pointerdown",e=>{
+    if(phase!=="running")return;
+    e.preventDefault(); activePointer=e.pointerId;
+    try { joystick.setPointerCapture(e.pointerId); } catch {}
+    setStick(e);
+  });
+  joystick.addEventListener("pointermove",e=>{if(e.pointerId===activePointer){e.preventDefault();setStick(e);}});
+  function joystickRelease(e){
+    if(e.pointerId===activePointer){activePointer=null;stick={x:0,y:0};syncStick();}
+  }
+  ["pointerup","pointercancel","lostpointercapture"].forEach(name=>joystick.addEventListener(name,joystickRelease));
+  const boostButton = $("boost");
+  boostButton.addEventListener("pointerdown",e=>{
+    e.preventDefault();boostTouch=true;boostButton.classList.add("active");
+    try {boostButton.setPointerCapture(e.pointerId);}catch{}
+  });
+  ["pointerup","pointercancel","lostpointercapture"].forEach(name=>boostButton.addEventListener(name,()=>{boostTouch=false;boostButton.classList.remove("active");}));
+
+  function updateHUD() {
+    $("distance").textContent = Math.round(f.distance).toLocaleString("de-DE");
+    $("speed").textContent = Math.round(f.speed*3.6) + " km/h";
+    $("altitude").textContent = Math.round(f.height) + " m";
+    $("health").textContent = Math.round(f.health) + "%";
+    $("collect").textContent = "+"+f.collected;
+    $("fuelLabel").textContent = Math.ceil(f.fuel)+"%";
+    $("fuel").style.width = f.fuel+"%";
+  }
+  function getInput() {
+    const keyboardX=Number(keys.has("KeyD")||keys.has("ArrowRight"))-Number(keys.has("KeyA")||keys.has("ArrowLeft"));
+    const keyboardY=Number(keys.has("KeyW")||keys.has("ArrowUp"))-Number(keys.has("KeyS")||keys.has("ArrowDown"));
+    return {
+      x: clamp(stick.x+keyboardX,-1,1), y:clamp(stick.y+keyboardY,-1,1),
+      boost:boostTouch||keys.has("Space")
+    };
+  }
+  function tick(dt) {
+    if (phase !== "running") return;
+    const u=bank.upgrades;
+    const input=getInput();
+    f.time+=dt;
+    f.roll+=(input.x - f.roll)*Math.min(1,dt*(2.5+u.tail*.22));
+    f.pitch+=(input.y - f.pitch)*Math.min(1,dt*3);
+    const targetSpeed=31+u.engine*4+(input.boost&&f.fuel>0?22:0);
+    f.speed+=(targetSpeed-f.speed)*Math.min(1,dt*.9);
+    f.x=clamp(f.x+f.roll*f.speed*dt*.26,-40,40);
+    f.vy+=(input.y*(8.5+u.wings*.6)+f.speed*.105-4.25+u.wings*.18-Math.abs(input.x)*.7)*dt;
+    f.vy=clamp(f.vy*(1-dt*.50),-13,14);
+    f.height=clamp(f.height+f.vy*dt,.1,58);
+    if (f.height>=58)f.vy=Math.min(0,f.vy);
+    f.distance+=f.speed*dt;
+    f.fuel=Math.max(0,f.fuel-dt*(1.08+(input.boost?2.7:0)));
+    const progress=f.distance;
+    const from=Math.max(0,Math.floor((progress-15-48)/21.5));
+    const to=Math.min(coins.length-1,Math.ceil((progress+15-48)/21.5));
+    for(let i=from;i<=to;i++){
+      const p=coins[i], id="c"+i;
+      if(!p||collected.has(id))continue;
+      if(Math.abs(p.d-progress)<3.1 && Math.abs(p.x-f.x)<4.5 && Math.abs(p.y-f.height)<4.2){
+        collected.add(id);f.collected+=5+u.income*3;
+        particles.push({x:p.x,y:p.y,d:p.d,life:1,kind:"coin"});
+      }
+    }
+    const ri=Math.round((progress-116)/96);
+    for(let i=Math.max(0,ri-1);i<=Math.min(rings.length-1,ri+1);i++){
+      const p=rings[i], id="r"+i;
+      if(!p||collected.has(id))continue;
+      if(Math.abs(p.d-progress)<4 && Math.abs(p.x-f.x)<6 && Math.abs(p.y-f.height)<6){
+        collected.add(id);f.collected+=22+u.income*6;f.bonusRings++;
+        f.fuel=Math.min(100,f.fuel+8);
+        particles.push({x:p.x,y:p.y,d:p.d,life:1,kind:"ring"});
+      }
+    }
+    const i0=Math.floor(progress/29);
+    for(let i=Math.max(0,i0-2);i<=i0+2;i++){
+      const d=29*i+18, x=(PRNG(i+70)-.5)*100, s=.75+PRNG(i+430)*1.4;
+      if(!hit.has(i) && Math.abs(progress-d)<2.4*s && Math.abs(x-f.x)<2.6*s && f.height<6.8*s){
+        hit.add(i);f.health=Math.max(0,f.health-Math.round(47/(1+u.hull*.25)));f.speed*=.55;f.vy=-4;
+        particles.push({x:f.x,y:f.height,d:progress,life:1,kind:"hit"});
+      }
+    }
+    particles.forEach(p=>p.life-=dt*1.5);particles=particles.filter(p=>p.life>0);
+    if(f.height<=1.5||f.health<=0||f.fuel<=0)finishFlight();
+  }
+
+  function resize() {
+    const r=canvas.getBoundingClientRect();
+    const dpr=Math.min(devicePixelRatio||1,1.7);
+    resolution.w=Math.max(1,r.width);resolution.h=Math.max(1,r.height);
+    canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener("resize",resize,{passive:true});
+  resize();
+  const path=(points,color,stroke,lineWidth=1)=>{
+    if(!points.length)return;
+    ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);
+    for(let i=1;i<points.length;i++)ctx.lineTo(points[i][0],points[i][1]);
+    ctx.closePath();ctx.fillStyle=color;ctx.fill();
+    if(stroke){ctx.lineWidth=lineWidth;ctx.strokeStyle=stroke;ctx.stroke();}
+  };
+  function project(x,y,d) {
+    const {w,h}=resolution;
+    const depth=d-f.distance+18;
+    if(depth<.8)return null;
+    const focal=Math.min(w*1.05,h*.92);
+    const scale=focal/depth;
+    return {x:w*.5+(x-f.x*.75)*scale, y:h*.4+(f.height+3-y)*scale, s:scale, depth};
+  }
+  function drawBackground() {
+    const {w,h}=resolution;
+    const sky=ctx.createLinearGradient(0,0,0,h*.67);
+    sky.addColorStop(0,"#5c9ddc");sky.addColorStop(.55,"#96d4f5");sky.addColorStop(1,"#f0d9b5");
+    ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
+    // Soft atmospheric haze and mountain silhouettes.
+    for(let k=3;k>=0;k--){
+      const cy=h*(.36+k*.023);
+      const color=["#9ab8b1","#a3c5b6","#a4c7ad","#87b6a0"][k];
+      const p=[[0,h*.62],[0,cy+10]];
+      for(let i=0;i<16;i++){
+        const px=i*w/15;
+        const py=cy-(16+k*5)*PRNG(i*7+10+k)-(i%4===0?20:0);
+        p.push([px,py]);
+      }
+      p.push([w,h*.7]);
+      path(p,color);
+    }
+    const ground=ctx.createLinearGradient(0,h*.39,0,h);
+    ground.addColorStop(0,"#a3b98c");ground.addColorStop(.5,"#709963");ground.addColorStop(1,"#395d49");
+    path([[0,h*.4],[w,h*.4],[w,h],[0,h]],ground);
+    // Perspective patches and runway strips.
+    for(let i=28;i>=0;i--){
+      const d=Math.floor(f.distance/34)*34+i*34;
+      const a=project(-95,0,d),b=project(95,0,d),c=project(-95,0,d+31),e=project(95,0,d+31);
+      if(!a||!b||!c||!e)continue;
+      if(a.y<h*.36&&c.y<h*.36)continue;
+      path([[a.x,a.y],[b.x,b.y],[e.x,e.y],[c.x,c.y]],i%2?"#ffffff04":"#183d1a09");
+    }
+    // Small cumulus clouds, parallax from flight progress.
+    for(let i=0;i<13;i++){
+      let x=(PRNG(i+150)*1.4-.2)*w+Math.sin(now*.02+i)*7;
+      const y=h*(.085+PRNG(i+75)*.2);
+      const size=(16+PRNG(i+50)*36)*(w/850+.5);
+      ctx.fillStyle="#fffefa69";
+      for (const [dx,dy,s] of [[0,0,1.1],[-.7,.12,.85],[.7,.06,.95],[.15,-.4,.65]]) {
+        ctx.beginPath();ctx.ellipse(x+dx*size,y+dy*size,size*s,size*.28*s,0,0,Math.PI*2);ctx.fill();
+      }
+    }
+  }
+  function drawTree(i) {
+    const d=i*29+18;
+    const x=(PRNG(i+70)-.5)*100;
+    const size=.75+PRNG(i+430)*1.4;
+    const p=project(x,0,d);
+    if(!p||p.depth>270||p.depth<2||p.x< -80 ||p.x>resolution.w+80)return;
+    const s=clamp(p.s*size,0,70);
+    if(p.y<resolution.h*.38||p.y-s*10>resolution.h+40)return;
+    // A conifer with a dark trunk and three overlapping crowns.
+    ctx.fillStyle="#5b4530";ctx.fillRect(p.x-s*.27,p.y-s*2,s*.54,s*2.3);
+    const palette=["#275d48","#306d54","#3a7656","#456c50"];
+    for(let k=0;k<3;k++){
+      const baseY=p.y-s*(.85+k*1.65);
+      path([[p.x,baseY-s*3.0],[p.x+s*(1.9-k*.3),baseY],[p.x-s*(1.9-k*.3),baseY]],palette[(i+k)%palette.length]);
+      if(s>4)ctx.strokeStyle="#173d3044";
+    }
+  }
+  function drawRock(i) {
+    const d=i*54+35,x=(PRNG(i+480)-.5)*105,p=project(x,0,d);
+    if(!p||p.depth<2||p.depth>230||p.x<-70||p.x>resolution.w+70)return;
+    const s=clamp(p.s*(.5+PRNG(i+300)*1.5),0,52);
+    if(p.y<resolution.h*.4)return;
+    path([[p.x-1.5*s,p.y],[p.x-1.2*s,p.y-1.1*s],[p.x-.3*s,p.y-1.5*s],[p.x+.8*s,p.y-1.1*s],[p.x+1.4*s,p.y]],"#768c7c");
+    path([[p.x-1.2*s,p.y-1.1*s],[p.x-.3*s,p.y-1.5*s],[p.x+.1*s,p.y-.35*s],[p.x-.2*s,p.y]],"#a1a99b");
+  }
+  function drawCoin(p,index) {
+    if(collected.has("c"+index))return;
+    const q=project(p.x,p.y,p.d);
+    if(!q||q.depth<2||q.depth>150)return;
+    const rad=clamp(q.s*.7,2,31);
+    if(q.x< -40||q.x>resolution.w+40||q.y< -30||q.y>resolution.h+40)return;
+    ctx.save();
+    const glow=ctx.createRadialGradient(q.x,q.y,1,q.x,q.y,rad*1.8);
+    glow.addColorStop(0,"#fbe99855");glow.addColorStop(1,"#ffcc2300");
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(q.x,q.y,rad*1.8,0,Math.PI*2);ctx.fill();
+    ctx.translate(q.x,q.y);ctx.scale(.65+Math.abs(Math.sin(now*2+index))*.35,1);
+    ctx.beginPath();ctx.arc(0,0,rad,0,Math.PI*2);ctx.fillStyle="#df9c22";ctx.fill();
+    ctx.beginPath();ctx.arc(-rad*.1,-rad*.1,rad*.77,0,Math.PI*2);ctx.fillStyle="#ffde65";ctx.fill();
+    ctx.strokeStyle="#fffaac";ctx.lineWidth=Math.max(1,rad*.13);ctx.stroke();
+    if(rad>8){ctx.fillStyle="#9d6a17";ctx.font="900 "+Math.round(rad*1.2)+"px Arial";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("F",0,1);}
+    ctx.restore();
+  }
+  function drawRing(p,index) {
+    if(collected.has("r"+index))return;
+    const q=project(p.x,p.y,p.d);
+    if(!q||q.depth<3||q.depth>175)return;
+    const rad=clamp(q.s*4,3,110);
+    ctx.save();ctx.strokeStyle="#b2fdff55";ctx.lineWidth=clamp(rad*.25,3,19);
+    ctx.shadowColor="#36f7ff";ctx.shadowBlur=24;
+    ctx.beginPath();ctx.ellipse(q.x,q.y,rad,rad*1.05,0,0,Math.PI*2);ctx.stroke();
+    ctx.shadowBlur=0;ctx.strokeStyle="#65e8f2";ctx.lineWidth=clamp(rad*.095,2,7);ctx.stroke();
+    ctx.strokeStyle="#e6feff";ctx.lineWidth=clamp(rad*.035,1,3);ctx.beginPath();ctx.ellipse(q.x,q.y,rad*.92,rad*.98,0,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+  }
+  function drawWorld() {
+    const i0=Math.floor(f.distance/29);
+    for(let i=i0+9;i>=Math.max(0,i0-2);i--){
+      drawRock(i*2);drawTree(i);
+      drawRock(i*2+1);
+    }
+    const lo=Math.max(0,Math.floor((f.distance-20-48)/21.5));
+    const hi=Math.min(coins.length-1,Math.ceil((f.distance+140-48)/21.5));
+    for(let i=hi;i>=lo;i--)drawCoin(coins[i],i);
+    const rl=Math.max(0,Math.floor((f.distance-20-116)/96));
+    const rh=Math.min(rings.length-1,Math.ceil((f.distance+160-116)/96));
+    for(let i=rh;i>=rl;i--)drawRing(rings[i],i);
+  }
+  function aircraft() {
+    const {w,h}=resolution;
+    // Light chase-camera parallax; airplane remains centered and always visible.
+    const cx=w*.5+(f.x*.25)*Math.min(w,h)*.018;
+    const cy=h*.585+clamp((17-f.height)*.35,-10,16);
+    const size=clamp(Math.min(w/470,h/640),.52,1.4);
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(f.roll*.16);ctx.scale(size,size);
+    const blur=ctx.createRadialGradient(5,24,3,5,24,190);
+    blur.addColorStop(0,"#172c3860");blur.addColorStop(1,"#172c3800");
+    ctx.fillStyle=blur;ctx.beginPath();ctx.ellipse(6,22,170,115,0,0,Math.PI*2);ctx.fill();
+    // Back wings and vertical stabilizer.
+    path([[-20,95],[-73,144],[-8,126],[9,126],[72,144],[20,95]],"#943b35","#43262a",3);
+    path([[0,79],[0,152],[18,117],[17,83]],"#da6a4f","#694039",2);
+    // Broad tapered main wings with darker underside.
+    path([[-14,-20],[-159,40],[-168,57],[-13,30],[11,30],[167,57],[158,40],[13,-20]],"#b5b0a1","#554f4b",4);
+    path([[-12,-28],[-158,26],[-155,43],[-17,13],[17,13],[155,43],[158,26],[12,-28]],"#ecdfbd","#afa48c",2);
+    path([[-155,29],[-113,15],[-110,49],[-155,43]],"#ad4b3f");
+    path([[155,29],[113,15],[110,49],[155,43]],"#ad4b3f");
+    // Fuselage and cockpit.
+    path([[-18,-71],[-15,98],[-4,145],[4,145],[15,98],[18,-71],[9,-102],[-9,-102]],"#dec7a5","#897d65",3);
+    path([[-9,-94],[-14,-32],[-8,84],[0,108],[0,-101]],"#f9e4c6");
+    path([[-13,-49],[-12,-2],[10,-2],[13,-49],[0,-70]],"#4f8ca0","#dbe9dc",2);
+    path([[-8,-42],[-9,-12],[0,-22],[0,-59]],"#a1d4dc44");
+    path([[-14,82],[-9,105],[9,105],[14,82]],"#b3473c");
+    ctx.fillStyle="#973e31";ctx.beginPath();ctx.ellipse(0,-95,19,16,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#262e3a";ctx.beginPath();ctx.arc(0,-97,6,0,Math.PI*2);ctx.fill();
+    // Spinning propeller, scaled up when boosting.
+    const angle=now*35;ctx.save();ctx.translate(0,-104);ctx.rotate(angle);
+    ctx.fillStyle="#354456";ctx.beginPath();ctx.roundRect(-5,-39,10,78,5);ctx.fill();
+    ctx.restore();
+    if(phase==="running"&&(getInput().boost||f.speed>44)){
+      ctx.globalAlpha=.18;ctx.strokeStyle="#f0ffff";ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(0,-104,43,28,0,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;
+    }
+    ctx.restore();
+  }
+  function drawParticles(dt) {
+    for(const p of particles){
+      const q=project(p.x,p.y,p.d);
+      if(!q)continue;
+      const r=(p.kind==="ring"?35:p.kind==="hit"?25:18)*(1.3-p.life)*Math.max(.45,Math.min(1.6,q.s/6));
+      ctx.save();ctx.globalAlpha=Math.max(0,p.life);
+      ctx.strokeStyle=p.kind==="hit"?"#ee6952":p.kind==="ring"?"#7ff4ff":"#ffe794";ctx.lineWidth=4;
+      ctx.beginPath();ctx.arc(q.x,q.y,r,0,Math.PI*2);ctx.stroke();ctx.restore();
+    }
+  }
+  function frame(timestamp) {
+    const dt=prev?clamp((timestamp-prev)/1000,0,.04):0;
+    prev=timestamp;now=timestamp/1000;
+    // Hold the static hangar airplane gently in the air; game movement only runs while flying.
+    tick(dt);
+    if(resolution.w!==canvas.clientWidth||resolution.h!==canvas.clientHeight)resize();
+    drawBackground();drawWorld();aircraft();drawParticles(dt);
+    if(phase==="running")updateHUD();
+    requestAnimationFrame(frame);
+  }
+  renderUpgrades();
+  show("garage");
+  requestAnimationFrame(frame);
+})();
+
+</script>
+</body>
+</html>
